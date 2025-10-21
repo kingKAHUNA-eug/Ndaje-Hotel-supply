@@ -1,0 +1,72 @@
+@reference "tailwindcss";
+
+@theme {
+  /* Orange/white palette inspired by DoorDash */
+  --color-primary-50: #fff4ef;
+  --color-primary-100: #ffe6dc;
+  --color-primary-200: #ffd0bf;
+  --color-primary-300: #ffb399;
+  --color-primary-400: #ff8a66;
+  --color-primary-500: #ff5c33;
+  --color-primary-600: #eb1700; /* main brand */
+  --color-primary-700: #c81400;
+  --color-primary-800: #a11100;
+  --color-primary-900: #7a0c00;
+
+  --color-secondary-50: #fafafa;
+  --color-secondary-100: #f4f4f5;
+  --color-secondary-200: #e5e7eb;
+  --color-secondary-300: #d1d5db;
+  --color-secondary-400: #9ca3af;
+  --color-secondary-500: #6b7280;
+  --color-secondary-600: #4b5563;
+  --color-secondary-700: #374151;
+  --color-secondary-800: #1f2937;
+  --color-secondary-900: #111827;
+}
+
+@layer components {
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm bg-primary-600 hover:bg-primary-700 text-white;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm bg-gray-100 hover:bg-gray-200 text-gray-900;
+  }
+  .btn-success {
+    @apply inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm bg-green-600 hover:bg-green-700 text-white;
+  }
+  .btn-warning {
+    @apply inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 shadow-sm bg-yellow-600 hover:bg-yellow-700 text-white;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-md border border-gray-200 p-6;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200 bg-white shadow-sm;
+  }
+  .search-input {
+    @apply w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+}
