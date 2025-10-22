@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import Logo from '../common/Logo'
-import { useAuth } from '../../contexts/AuthContext'
+ 
 
 // Image imports
 import LandingImage7 from '../../assets/images/LandingImage_7.png'
@@ -20,7 +20,7 @@ const countryOptions = [
 ];
 
 function ClientLanding() {
-  const { currentUser } = useAuth()
+  
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
