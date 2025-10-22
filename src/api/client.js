@@ -17,7 +17,7 @@ async function apiFetch(path, options = {}) {
 
   const text = await res.text()
   let data
-  try { data = text ? JSON.parse(text) : null } catch (e) { data = text }
+  try { data = text ? JSON.parse(text) : null } catch { data = text }
 
   if (!res.ok) {
     const err = new Error(data?.message || res.statusText || 'API error')
