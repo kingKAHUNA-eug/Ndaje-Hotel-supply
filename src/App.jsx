@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import { LocationProvider } from './contexts/LocationContext'
-
+import { getQuotes } from './api/test';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 // Components
 import ClientLanding from './components/client/ClientLanding'
 import ClientDashboard from './components/client/ClientDashboard'
@@ -29,6 +30,18 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 }
 
 function App() {
+   useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        const quotes = await getQuotes();
+        console.log('Fetched quotes:', quotes);
+      } catch (err) {
+        console.error('Error fetching quotes:', err);
+      }
+    };
+
+    fetchQuotes();
+  }, []);
   return (
     <Router>
       <AuthProvider>
@@ -37,7 +50,7 @@ function App() {
             
             <div className="App min-h-screen bg-gray-50">
               <Routes>
-                {/* Public Routes */}
+        
                 <Route path="/" element={<ClientLanding />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Signup />} />

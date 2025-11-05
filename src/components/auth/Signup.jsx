@@ -1,37 +1,123 @@
-import React, { useState } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
-import { useNavigate, Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 function Signup() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { login, signUpWithCredentials } = useAuth()
-  const navigate = useNavigate()
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [line1, setLine1] = useState('');
+  const [line2, setLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [showVerification, setShowVerification] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login, signUpWithCredentials } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      const payload = { email, password, name }
-      const res = await signUpWithCredentials(payload)
-      const user = res.user || res
-      login(user)
-      navigate('/dashboard')
+      // Create user payload
+      const userPayload = {
+        name,
+        email,
+        phone,
+        password,
+        role: 'CLIENT',
+      };
+
+      // Sign up user
+      const userRes = await signUpWithCredentials(userPayload);
+      const user = userRes.user || userRes;
+
+      // Show verification input
+      setShowVerification(true);
+      setLoading(false);
     } catch (err) {
-      setError(err?.message || 'Failed to sign up')
+      if (err.response?.data?.errors) {
+        const errorMessages = err.response.data.errors.map((e) => e.message).join(', ');
+        setError(errorMessages);
+      } else {
+        setError(err.message || 'Failed to sign up');
+      }
+      setLoading(false);
     }
-    setLoading(false)
-  }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/verification/verify`, {
+        phone,
+        code: verificationCode,
+        type: 'SIGNUP',
+      });
+
+      if (res.data.success) {
+        // Create address payload
+        const addressPayload = {
+          line1,
+          line2,
+          city,
+          state,
+          postalCode,
+          country,
+        };
+
+        // Call address creation endpoint
+        const addressRes = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/addresses`,
+          addressPayload,
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
+        );
+
+        if (addressRes.data.success) {
+          login(user);
+          navigate('/dashboard');
+        } else {
+          throw new Error(addressRes.data.message || 'Failed to save address');
+        }
+      } else {
+        throw new Error(res.data.message || 'Verification failed');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to verify code');
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/google`, {
+        token: credentialResponse.credential,
+      });
+
+      if (res.data.success) {
+        login(res.data.data.user, res.data.data.token);
+        navigate('/dashboard');
+      } else {
+        throw new Error(res.data.message || 'Google sign-in failed');
+      }
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed');
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg p-8 max-w-[400px] w-full mx-auto relative">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[22px] font-bold text-gray-900">Sign in or Sign up</h2>
+        <h2 className="text-[22px] font-bold text-gray-900">Sign Up</h2>
         <button className="text-gray-400 hover:text-gray-600">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -39,7 +125,6 @@ function Signup() {
         </button>
       </div>
 
-      {/* Toggle buttons for Sign In/Sign Up */}
       <div className="flex gap-3 mb-6">
         <Link
           to="/login"
@@ -47,47 +132,25 @@ function Signup() {
         >
           Sign In
         </Link>
-        <button 
-          className="flex-1 py-2 px-4 text-center text-[15px] font-medium text-gray-900 border-b-2 border-gray-900"
-        >
+        <button className="flex-1 py-2 px-4 text-center text-[15px] font-medium text-gray-900 border-b-2 border-gray-900">
           Sign Up
         </button>
       </div>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {error && (
-          <div className="text-red-600 text-[13px] font-medium">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-red-600 text-[13px] font-medium">{error}</div>}
 
-        {/* Name fields */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-[13px] font-medium text-gray-900 mb-1 block">
-              First Name
-            </label>
-            <input
-              type="text"
-              placeholder=""
-              className="w-full px-4 h-[52px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 text-[15px]"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <div className="text-red-600 text-[13px] font-medium mt-1">First name is required</div>
-          </div>
-          <div>
-            <label className="text-[13px] font-medium text-gray-900 mb-1 block">
-              Last Name
-            </label>
-            <input
-              type="text"
-              placeholder=""
-              className="w-full px-4 h-[52px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 text-[15px]"
-              required
-            />
-          </div>
+        {/* Name field */}
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Full Name</label>
+          <input
+            type="text"
+            placeholder="Enter full name"
+            className="w-full px-4 h-[52px] border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-900 focus:border-gray-900 text-[15px]"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
         {/* Email field */}
@@ -103,22 +166,15 @@ function Signup() {
         </div>
 
         {/* Phone Number field */}
-        <div className="flex gap-2">
-          <div className="w-[90px]">
-            <select 
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 appearance-none bg-white"
-              defaultValue="+250"
-            >
-              <option value="+250">+250</option>
-              <option value="+1">+1</option>
-              <option value="+44">+44</option>
-            </select>
-          </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Phone Number</label>
           <input
             type="tel"
-            placeholder="Mobile Number"
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            placeholder="+250123456789"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
         </div>
 
@@ -133,35 +189,120 @@ function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button 
+            <button
               type="button"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               onClick={() => {
-                const input = document.querySelector('input[type="password"]')
-                input.type = input.type === 'password' ? 'text' : 'password'
+                const input = document.querySelector('input[type="password"]');
+                input.type = input.type === 'password' ? 'text' : 'password';
               }}
             >
               Show
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">At least 10 characters</p>
+          <p className="text-xs text-gray-500 mt-1">At least 6 characters</p>
         </div>
+
+        {/* Address fields */}
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Address Line 1</label>
+          <input
+            type="text"
+            placeholder="Street address"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            required
+            value={line1}
+            onChange={(e) => setLine1(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Address Line 2 (optional)</label>
+          <input
+            type="text"
+            placeholder="Apartment, suite, etc."
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+            value={line2}
+            onChange={(e) => setLine2(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">City</label>
+          <input
+            type="text"
+            placeholder="City"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            required
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">State (optional)</label>
+          <input
+            type="text"
+            placeholder="State"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Postal Code (optional)</label>
+          <input
+            type="text"
+            placeholder="Postal Code"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-[13px] font-medium text-gray-900 mb-1 block">Country</label>
+          <input
+            type="text"
+            placeholder="Country"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            required
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+          />
+        </div>
+
+        {/* Verification Code Input */}
+        {showVerification && (
+          <div>
+            <label className="text-[13px] font-medium text-gray-900 mb-1 block">Verification Code</label>
+            <input
+              type="text"
+              placeholder="Enter 6-digit code"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+            />
+            <button
+              type="button"
+              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              onClick={handleVerifyCode}
+            >
+              Verify Code
+            </button>
+          </div>
+        )}
 
         {/* Terms and conditions */}
         <p className="text-xs text-gray-600">
-          By tapping "Sign Up" or "Continue with..." you agree to NDAJE's{' '}
-          <a href="#" className="text-red-600 hover:text-red-700">Terms</a>,
-          including a waiver of your jury trial right, and{' '}
+          By tapping "Sign Up" you agree to NDAJE's{' '}
+          <a href="#" className="text-red-600 hover:text-red-700">Terms</a>, including a waiver of
+          your jury trial right, and{' '}
           <a href="#" className="text-red-600 hover:text-red-700">Privacy Policy</a>.
-          We may text you a verification code. Msg & data rates apply.
         </p>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || showVerification}
           className="w-full bg-red-600 text-white rounded-lg px-4 py-3 font-medium hover:bg-red-700 transition-colors disabled:bg-red-400"
         >
-          {loading ? 'Creating account...' : 'Continue to Sign Up'}
+          {loading ? 'Creating account...' : 'Sign Up'}
         </button>
       </form>
 
@@ -174,36 +315,14 @@ function Signup() {
         </div>
       </div>
 
-      {/* Social login buttons */}
       <div className="space-y-3">
-        <button type="button" className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-          <svg className="w-5 h-5" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </button>
-        
-        <button type="button" className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          Continue with Facebook
-        </button>
-        
-        <button type="button" className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50">
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M17.569 12.6254C17.597 15.652 20.2179 16.8348 20.247 16.8483C20.2248 16.9241 19.8282 18.1805 18.8902 19.4819C18.0697 20.6199 17.2092 21.7537 15.8925 21.7828C14.6022 21.8111 14.1666 21.0379 12.6992 21.0379C11.2318 21.0379 10.7453 21.7537 9.52385 21.8111C8.26358 21.8685 7.27049 20.5964 6.44154 19.4659C4.74942 17.1569 3.48632 12.9897 5.22851 10.1723C6.0921 8.77359 7.64544 7.88454 9.33756 7.85639C10.5715 7.82825 11.7294 8.67571 12.4974 8.67571C13.2654 8.67571 14.6751 7.68246 16.1424 7.82825C16.8114 7.85639 18.6616 8.11147 19.8442 9.81165C19.7492 9.87793 17.5469 11.1235 17.569 12.6254ZM15.2244 5.89505C15.9197 5.05759 16.3925 3.88143 16.2721 2.71484C15.2506 2.75766 14.0177 3.34196 13.2952 4.17899C12.647 4.92334 12.0788 6.12807 12.1992 7.26608C13.3317 7.35093 14.529 6.73271 15.2244 5.89505Z"/>
-          </svg>
-          Continue with Apple
-        </button>
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => setError('Google sign-in failed')}
+        />
       </div>
     </div>
-  )
+  );
 }
 
-export default Signup
-
-
+export default Signup;
