@@ -14,7 +14,6 @@ import {
   CalendarIcon,
   CurrencyDollarIcon,
   UserIcon,
-  UserPlusIcon,
   ChevronRightIcon,
   StarIcon,
   ShoppingCartIcon,
@@ -26,7 +25,8 @@ import {
   SparklesIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  ClipboardDocumentIcon
+  ClipboardDocumentIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline'
 
 // Utility: random friendly bucket name
@@ -50,14 +50,105 @@ const generateOrderCode = () => {
   return `NDJ${Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('')}`
 }
 
-// Sample product catalog
+// Sample product catalog with detailed images
 const products = [
-  { id: 1, name: 'Premium Bath Towels', description: '100% cotton, 600 GSM, luxury hotel quality', price: 45000, unit: 'per pack of 10', emoji: '🛁', category: 'linens', rating: 4.8, minOrder: 5, delivery: '2-3 days' },
-  { id: 2, name: 'Eco Shampoo Bottles', description: 'Biodegradable, 200ml, various scents available', price: 28000, unit: 'per box of 50', emoji: '🧴', category: 'toiletries', rating: 4.6, minOrder: 2, delivery: '1-2 days' },
-  { id: 3, name: 'Professional Cleaning Kit', description: 'Complete set for hotel room maintenance', price: 120000, unit: 'per kit', emoji: '🧹', category: 'cleaning', rating: 4.9, minOrder: 1, delivery: '3-4 days' },
-  { id: 4, name: 'Luxury Bath Amenities', description: 'Soap, shampoo, conditioner & lotion set', price: 35000, unit: 'per set of 4', emoji: '🧼', category: 'amenities', rating: 4.7, minOrder: 10, delivery: '2 days' },
-  { id: 5, name: 'Ceramic Dinnerware Set', description: 'Elegant white ceramic, restaurant quality', price: 85000, unit: 'per set of 12', emoji: '🍽️', category: 'dining', rating: 4.5, minOrder: 3, delivery: '4-5 days' },
-  { id: 6, name: 'Hotel Bed Linens', description: '300 thread count, king size sheets', price: 65000, unit: 'per set', emoji: '🛏️', category: 'linens', rating: 4.8, minOrder: 4, delivery: '3 days' }
+  { 
+    id: 1, 
+    name: 'Premium Bath Towels', 
+    description: '100% cotton, 600 GSM, luxury hotel quality', 
+    price: 45000, 
+    unit: 'per pack of 10', 
+    emoji: '🛁', 
+    category: 'linens', 
+    rating: 4.8, 
+    minOrder: 5, 
+    delivery: '2-3 days',
+    images: [
+      'https://images.unsplash.com/photo-1602020075125-15ecf8230c8f?w=500',
+      'https://images.unsplash.com/photo-1584337939954-b8fcf1b837bc?w=500',
+      'https://images.unsplash.com/photo-1620830953759-51ece0e1c8d6?w=500'
+    ]
+  },
+  { 
+    id: 2, 
+    name: 'Eco Shampoo Bottles', 
+    description: 'Biodegradable, 200ml, various scents available', 
+    price: 28000, 
+    unit: 'per box of 50', 
+    emoji: '🧴', 
+    category: 'toiletries', 
+    rating: 4.6, 
+    minOrder: 2, 
+    delivery: '1-2 days',
+    images: [
+      'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500',
+      'https://images.unsplash.com/photo-1610992019935-19af54d7ae4a?w=500'
+    ]
+  },
+  { 
+    id: 3, 
+    name: 'Professional Cleaning Kit', 
+    description: 'Complete set for hotel room maintenance', 
+    price: 120000, 
+    unit: 'per kit', 
+    emoji: '🧹', 
+    category: 'cleaning', 
+    rating: 4.9, 
+    minOrder: 1, 
+    delivery: '3-4 days',
+    images: [
+      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500',
+      'https://images.unsplash.com/photo-1584622650113-1a2e47551b31?w=500'
+    ]
+  },
+  { 
+    id: 4, 
+    name: 'Luxury Bath Amenities', 
+    description: 'Soap, shampoo, conditioner & lotion set', 
+    price: 35000, 
+    unit: 'per set of 4', 
+    emoji: '🧼', 
+    category: 'amenities', 
+    rating: 4.7, 
+    minOrder: 10, 
+    delivery: '2 days',
+    images: [
+      'https://images.unsplash.com/photo-1600857062244-5c0071b6a48b?w=500',
+      'https://images.unsplash.com/photo-1544885353-1caa3c8f4a3e?w=500'
+    ]
+  },
+  { 
+    id: 5, 
+    name: 'Ceramic Dinnerware Set', 
+    description: 'Elegant white ceramic, restaurant quality', 
+    price: 85000, 
+    unit: 'per set of 12', 
+    emoji: '🍽️', 
+    category: 'dining', 
+    rating: 4.5, 
+    minOrder: 3, 
+    delivery: '4-5 days',
+    images: [
+      'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=500',
+      'https://images.unsplash.com/photo-1572635146182-3c9f3b435c4a?w=500'
+    ]
+  },
+  { 
+    id: 6, 
+    name: 'Hotel Bed Linens', 
+    description: '300 thread count, king size sheets', 
+    price: 65000, 
+    unit: 'per set', 
+    emoji: '🛏️', 
+    category: 'linens', 
+    rating: 4.8, 
+    minOrder: 4, 
+    delivery: '3 days',
+    images: [
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500',
+      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500'
+    ]
+  }
 ]
 
 const STORAGE_KEY = 'ndaje_client_buckets_v2'
@@ -91,6 +182,10 @@ function ClientDashboard() {
   const [scrollPosition, setScrollPosition] = useState(0)
   const mainRef = useRef(null)
 
+  // Location state
+  const [userLocation, setUserLocation] = useState(null)
+  const [locationPermission, setLocationPermission] = useState('prompt')
+
   // Buckets: user creates named buckets (cart-like). persisted in localStorage
   const [buckets, setBuckets] = useState(() => loadBuckets())
   const [activeBucketId, setActiveBucketId] = useState(buckets[0]?.id || null)
@@ -101,6 +196,7 @@ function ClientDashboard() {
   const [addQty, setAddQty] = useState(1)
   const [editingBucket, setEditingBucket] = useState(null)
   const [editingItem, setEditingItem] = useState(null)
+  const [viewingImages, setViewingImages] = useState(null)
 
   // Orders & Payment state
   const [orderUpdates, setOrderUpdates] = useState(() => loadOrderUpdates())
@@ -118,6 +214,33 @@ function ClientDashboard() {
     const userOrders = rawOrders.filter(o => o.clientId === currentUser?.id)
     return userOrders.map(o => ({ ...o, ...orderUpdates[o.id] }))
   }, [rawOrders, currentUser, orderUpdates])
+
+  // Get user location
+  useEffect(() => {
+    const getLocation = () => {
+      if (!navigator.geolocation) {
+        console.log('Geolocation is not supported')
+        return
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          setUserLocation({ latitude, longitude })
+          setLocationPermission('granted')
+        },
+        (error) => {
+          console.log('Error getting location:', error)
+          setLocationPermission('denied')
+        }
+      )
+    }
+
+    // Only ask for location if permission is not yet decided
+    if (locationPermission === 'prompt') {
+      getLocation()
+    }
+  }, [locationPermission])
 
   // Scroll handling for fixed header
   useEffect(() => {
@@ -243,7 +366,7 @@ function ClientDashboard() {
       submittedOrderId: order.id 
     } : b))
     
-    alert('Quote request submitted — suppliers will respond shortly.')
+    alert('Quote request submitted. Suppliers will respond soon.')
   }
 
   // Simulate admin sending a bill
@@ -309,12 +432,31 @@ function ClientDashboard() {
     alert('Copied to clipboard!')
   }
 
+  const requestLocationPermission = () => {
+    setLocationPermission('prompt')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white text-gray-900" ref={mainRef}>
+      {/* Location Banner */}
+      {locationPermission === 'prompt' && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-blue-600 text-white p-3 text-center">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <span className="text-sm">We need your location </span>
+            <button 
+              onClick={requestLocationPermission}
+              className="ml-4 px-4 py-1 bg-white text-blue-600 rounded-lg text-sm font-medium"
+            >
+              Allow
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Fixed Top Navigation */}
-      <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <div className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white/90 backdrop-blur-sm'
-      }`}>
+      } ${locationPermission === 'prompt' ? 'mt-10' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -335,28 +477,19 @@ function ClientDashboard() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 border border-transparent rounded-2xl bg-white shadow-sm focus:border-blue-300 focus:ring-2 focus:ring-blue-200 text-sm"
-                  placeholder="Search supplies, e.g., towels, shampoo, dinnerware..."
+                  placeholder="Search supplies, towels, shampoo, dinnerware..."
                 />
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <button className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
                 <MapPinIcon className="w-4 h-4" />
-                <span className="font-medium">Kigali</span>
+                <span className="font-medium">
+                  {userLocation ? 'Location Found' : 'Detecting Location...'}
+                </span>
                 <ChevronRightIcon className="w-3 h-3" />
               </button>
-
-              <div className="flex items-center gap-2">
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-2xl text-gray-700 hover:bg-gray-100 border border-gray-200">
-                  <UserIcon className="w-4 h-4" />
-                  <span className="text-sm">Sign In</span>
-                </button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-blue-900 text-white hover:bg-blue-800 shadow">
-                  <UserPlusIcon className="w-4 h-4" />
-                  <span className="text-sm">Sign Up</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -378,7 +511,7 @@ function ClientDashboard() {
 
             <div className="flex items-center gap-3 ml-3">
               {buckets.length === 0 && (
-                <div className="text-sm text-gray-500">No buckets yet — create one to start collecting items.</div>
+                <div className="text-sm text-gray-500">No buckets yet. Create one to start collecting items.</div>
               )}
               {buckets.map(b => (
                 <button
@@ -423,7 +556,7 @@ function ClientDashboard() {
       </div>
 
       {/* Spacer for fixed header */}
-      <div className="h-28"></div>
+      <div className={`h-28 ${locationPermission === 'prompt' ? 'mt-10' : ''}`}></div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-4 gap-8">
@@ -518,6 +651,17 @@ function ClientDashboard() {
 
                   <h3 className="font-semibold text-lg text-blue-900 mt-4">{p.name}</h3>
                   <p className="text-sm text-gray-600 mt-2 line-clamp-3">{p.description}</p>
+
+                  {/* View Images Button */}
+                  <div className="mt-3">
+                    <button 
+                      onClick={() => setViewingImages(p)}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+                    >
+                      <PhotoIcon className="w-4 h-4" />
+                      View Images
+                    </button>
+                  </div>
 
                   <div className="mt-4 flex items-center justify-between">
                     <div>
@@ -654,7 +798,7 @@ function ClientDashboard() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="text-xl font-semibold text-blue-900 mb-2">Create a Bucket</h3>
-            <p className="text-sm text-gray-600 mb-4">Give it a simple/funny name to recognise later.</p>
+            <p className="text-sm text-gray-600 mb-4">Give it a simple name to recognise later.</p>
             <input 
               value={newBucketName} 
               onChange={(e) => setNewBucketName(e.target.value)} 
@@ -742,6 +886,47 @@ function ClientDashboard() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Images Modal */}
+      {viewingImages && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-blue-900">{viewingImages.name}</h3>
+                <p className="text-gray-600 mt-2">{viewingImages.description}</p>
+              </div>
+              <button 
+                onClick={() => setViewingImages(null)} 
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {viewingImages.images.map((img, index) => (
+                <div key={index} className="rounded-xl overflow-hidden shadow-lg">
+                  <img 
+                    src={img} 
+                    alt={`${viewingImages.name} - Image ${index + 1}`}
+                    className="w-full h-64 object-cover hover:scale-105 transition duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <button 
+                onClick={() => setViewingImages(null)}
+                className="px-6 py-3 bg-blue-900 text-white rounded-xl hover:bg-blue-800"
+              >
+                Close Images
+              </button>
             </div>
           </div>
         </div>
