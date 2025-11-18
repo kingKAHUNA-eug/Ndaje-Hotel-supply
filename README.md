@@ -21,6 +21,6 @@ If you are developing a production application, we recommend using TypeScript wi
 ## make a manager dashboard [insert test credentials to only direct the manager to this dashboard]
 ## N.B on the manager dashboard there requests from the clients in which the manager must approve such as payment,assigning a given requets to the driver through there mobile phone,tracking the deliveries,make the whole process report
 ## make also a research on quote based system in which the clients will make order through and this order will be directed to the managers where a manager will have to choose to respond to a requsts of the client within their dashboard
-N.B the managers may be more than one and choose to respond to a certain request so the system must take one of them to work on it depending on the one who chose to do it first and others must wait for other requests
+## N.B the managers may be more than one and choose to respond to a certain request so the system must take one of them to work on it depending on the one who chose to do it first and others must wait for other requests
 ## make the ClientLanding responsive by replacing the it with an image that is located in scr/assets/images/backgroungImage.png
 ## and also you will a Ndaje_logo.svg in scr/assets
