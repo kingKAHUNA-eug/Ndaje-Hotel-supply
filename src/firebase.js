@@ -21,7 +21,7 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     const idToken = await result.user.getIdToken(); // ← CRITICAL LINE
 
-    const res = await fetch('http://localhost:4000/api/auth/google', {
+    const res = await fetch('https://ndaje-hotel-supply-api.onrender.com/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idToken }),

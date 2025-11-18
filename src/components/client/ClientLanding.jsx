@@ -512,7 +512,7 @@ function ClientLanding() {
                   const password = e.target.password.value;
 
                   try {
-                    const res = await fetch('http://localhost:4000/api/auth/login', {
+                    const res = await fetch('https://ndaje-hotel-supply-api.onrender.com/api/auth/login', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ email, password }),
@@ -577,7 +577,7 @@ function ClientLanding() {
                   };
 
                     try {
-                      const res = await fetch('http://localhost:4000/api/auth/signup', {
+                      const res = await fetch('https://ndaje-hotel-supply-api.onrender.com/api/auth/signup', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
