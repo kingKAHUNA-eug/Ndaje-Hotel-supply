@@ -16,6 +16,7 @@ import Logo from '../common/Logo'
 import { useAuth } from '../../contexts/AuthContext'
 import { signInWithGoogle } from '../../firebase' // ← WORKS NOW
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../../config/api';
 // Image imports
 import LandingImage7 from '../../assets/images/LandingImage_7.png'
 import LandingImage00 from '../../assets/images/LandingImage_00.png'
@@ -512,7 +513,7 @@ function ClientLanding() {
                   const password = e.target.password.value;
 
                   try {
-                    const res = await fetch('https://ndaje-hotel-supply-api.onrender.com/api/auth/login', {
+                   const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ email, password }),
@@ -577,7 +578,7 @@ function ClientLanding() {
                   };
 
                     try {
-                      const res = await fetch('https://ndaje-hotel-supply-api.onrender.com/api/auth/signup', {
+                      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
