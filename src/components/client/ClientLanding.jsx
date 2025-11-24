@@ -200,8 +200,8 @@ function ClientLanding() {
 
     try {
       const endpoint = isLogin 
-        ? `${API_BASE_URL}/api/auth/login` 
-        : `${API_BASE_URL}/api/auth/signup`;
+        ? `${API_BASE_URL}/auth/login` 
+        : `${API_BASE_URL}/auth/signup`;
 
       const payload = isLogin 
         ? { email, password }
