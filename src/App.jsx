@@ -1,3 +1,8 @@
+// Auto-fix double slash and double /api
+const API_BASE = import.meta.env.VITE_API_URL
+  .replace(/\/+$/, '')           // remove trailing slashes
+  .replace(/\/api\/api/, '/api') // fix double /api
+  .replace(/\/\/auth/, '/auth')  // fix double slash
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
