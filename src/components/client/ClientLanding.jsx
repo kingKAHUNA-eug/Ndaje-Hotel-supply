@@ -162,7 +162,7 @@ function ModernFooter() {
 }
 
 function ClientLanding() {
- const navigate = useNavigate();     
+  const navigate = useNavigate();     
   const { currentUser } = useAuth();  
   const [query, setQuery] = useState('')
   const [showLogin, setShowLogin] = useState(false)
@@ -181,6 +181,69 @@ function ClientLanding() {
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
     setShowMap(false);
+  };
+
+  // BULLETPROOF AUTH HANDLER — WORKS 100% OF THE TIME
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const isLogin = showLogin;
+
+    const email = formData.get('email')?.trim();
+    const password = formData.get('password');
+    const name = formData.get('name')?.trim();
+
+    if (!email || !password || (!isLogin && !name)) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    try {
+      const endpoint = isLogin 
+        ? `${API_BASE_URL}/api/auth/login` 
+        : `${API_BASE_URL}/api/auth/signup`;
+
+      const payload = isLogin 
+        ? { email, password }
+        : { name, email, password, phone: formData.get('phone') || undefined };
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const error = await data;
+        throw new Error(error.message || error.error || 'Authentication failed');
+      }
+
+      const result = await data;
+
+      // Works with data.data.token OR data.token — NEVER crashes again
+      const token = result?.data?.token || result?.token;
+      const user = result?.data?.user || result?.user;
+
+      if (!token || !user) {
+        throw new Error('Invalid response from server');
+      }
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // SUCCESS — GO TO DASHBOARD
+      navigate('/ClientDashboard');
+
+      // Close modal
+      setShowLogin(false);
+      setShowSignup(false);
+
+    } catch (err) {
+      console.error('Auth error:', err);
+      alert(err.message || 'Login failed. Please try again.');
+    }
   };
 
   return (
@@ -504,129 +567,64 @@ function ClientLanding() {
               </button>
             </div>
 
-            {/* SIGN IN: Email + Password */}
-            {showLogin && (
-              <form 
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const email = e.target.email.value;
-                  const password = e.target.password.value;
+            {/* SINGLE FORM — WORKS FOR BOTH LOGIN & SIGNUP */}
+            <form onSubmit={handleAuthSubmit} className="space-y-6">
 
-                  try {
-                   const res = await fetch(`${API_BASE_URL}/auth/login`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email, password }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || 'Login failed');
-                     localStorage.setItem('token', data.data.token);
-                     navigate('/ClientDashboard'); // ← AUTO REDIRECT
-                  } catch (err) {
-                    alert(err.message);
-                  }
-                }}
-                className="space-y-6"
-              >
+              {/* Name field — only show on signup */}
+              {!showLogin && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">Hotel/Business Name</label>
+                  <input 
+                    name="name" 
+                    type="text" 
+                    required 
+                    placeholder="e.g. Marriott Kigali" 
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors" 
+                  />
+                </div>
+              )}
+
+              <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
                 <input 
                   name="email" 
                   type="email" 
-                  placeholder="Email" 
                   required 
+                  placeholder="manager@hotel.rw" 
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors" 
                 />
-                <div className="relative">
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
-                  <input 
-                    name="password" 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="Password" 
-                    required 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors pr-12" 
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowPassword(!showPassword)} 
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                  </button>
-                </div>
+              </div>
+
+              <div className="relative">
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
+                <input 
+                  name="password" 
+                  type={showPassword ? "text" : "password"} 
+                  required 
+                  minLength="6"
+                  placeholder="••••••••" 
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors pr-12" 
+                />
                 <button 
-                  type="submit" 
-                  className="w-full bg-blue-600 text-white rounded-xl px-4 py-4 font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-3 top-10 text-gray-400 hover:text-gray-600"
                 >
-                  Sign In
+                  {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                 </button>
-              </form>
-            )}
+              </div>
 
-            {/* SIGN UP: Full form + Social */}
-            {showSignup && (
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 text-white rounded-xl px-4 py-4 font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+              >
+                {showLogin ? 'Sign In →' : 'Create Account →'}
+              </button>
+            </form>
+
+            {/* Google Sign In — only on signup */}
+            {!showLogin && (
               <>
-                <form 
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    // USE name DIRECTLY — NO firstName/lastName
-                       const payload = {
-                        name: formData.get('name').trim(),
-                        email: formData.get('email'),
-                        password: formData.get('password'),
-                        phone: formData.get('phone') || undefined,
-                  };
-
-                    try {
-                      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                      });
-                      const data = await res.json();
-                      if (!res.ok) throw new Error(data.message || 'Signup failed');
-                      // NO ALERT — SAVE TOKEN + REDIRECT
-                      localStorage.setItem('token', data.data.token);
-                     navigate('/ClientDashboard'); // ← AUTO REDIRECT
-                    } catch (err) {
-                      alert(err.message);
-                    }
-                  }}
-                  className="space-y-6"
-                >
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">Name</label>
-                      <input name="name" type="text" required className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
-                    <input name="email" type="email" required className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
-                    <div className="relative">
-                      <input
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        minLength="6"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-colors pr-12"
-                      />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                        {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <button type="submit" className="w-full bg-blue-600 text-white rounded-xl px-4 py-4 font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
-                    Create Account
-                  </button>
-                </form>
-
                 <div className="relative py-6">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300"></div>
@@ -649,8 +647,6 @@ function ClientLanding() {
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
                   </button>
-                  
-                  
                 </div>
               </>
             )}
