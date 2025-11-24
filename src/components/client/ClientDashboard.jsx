@@ -32,7 +32,7 @@ function ClientDashboard() {
   const [submittingQuote, setSubmittingQuote] = useState(false)
   const [quoteName, setQuoteName] = useState('')
 
-  const token = localStorage.getItem('clientToken') || localStorage.getItem('token')
+  const token = localStorage.getItem('token') // ✅ FIXED - Only use 'token'
 
   // Fetch real products & quotes
   useEffect(() => {
