@@ -513,7 +513,7 @@ function ClientLanding() {
                   const password = e.target.password.value;
 
                   try {
-                   const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                   const res = await fetch(`${API_BASE_URL}/auth/login`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ email, password }),
