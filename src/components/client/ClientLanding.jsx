@@ -277,10 +277,10 @@ function ClientLanding() {
         <div className="absolute inset-0 overflow-hidden">
           {/* Desktop Images */}
           <div className="hidden lg:block">
-            <img src={LandingImage7} alt="LandingImage_7" className="pointer-events-none select-none absolute left-[-80px] bottom-[-35px] w-110 rounded-3xl opacity-100 z-10 shadow-2xl" />
-            <img src={LandingImage00} alt="LandingImage_00" className="pointer-events-none select-none absolute right-[-75px] bottom-[30px] w-130 rounded-3xl opacity-100 z-0 shadow-2xl" />
-            <img src={LandingImage2} alt="LandingImage_2" className="pointer-events-none select-none absolute left-[-110px] top-[0px] w-130 rounded-3xl rotate-[45deg] opacity-100 z-0 shadow-2xl" />
-            <img src={mobile} alt="mobile" className="pointer-events-none select-none absolute left-[160px] bottom-[-10px] w-72 rounded-3xl rotate-[-15deg] opacity-100 z-0 shadow-2xl" />
+            <img src={LandingImage7} alt="LandingImage_7" className="pointer-events-none select-none absolute left-[-80px] bottom-[-35px] w-110 rounded-3xl opacity-0 z-10 shadow-2xl" />
+            <img src={LandingImage00} alt="LandingImage_00" className="pointer-events-none select-none absolute right-[-75px] bottom-[30px] w-130 rounded-3xl opacity-0 z-0 shadow-2xl" />
+            <img src={LandingImage2} alt="LandingImage_2" className="pointer-events-none select-none absolute left-[-110px] top-[0px] w-130 rounded-3xl rotate-[45deg] opacity-0 z-0 shadow-2xl" />
+            <img src={mobile} alt="mobile" className="pointer-events-none select-none absolute left-[160px] bottom-[-10px] w-72 rounded-3xl rotate-[-15deg] opacity-0 z-0 shadow-2xl" />
           </div>
           
           {/* Mobile Background Pattern */}
