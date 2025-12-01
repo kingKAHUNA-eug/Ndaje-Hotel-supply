@@ -46,8 +46,8 @@ function ClientDashboard() {
         const headers = { Authorization: `Bearer ${token}` }
 
         const [productsRes, quotesRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/products`, { headers }),
-          axios.get(`${API_BASE_URL}/api/quotes/client/my-quotes`, { headers })
+          axios.get(`${API_BASE_URL}/products`, { headers }),
+          axios.get(`${API_BASE_URL}/quotes/client/my-quotes`, { headers })
         ])
 
         setProducts(productsRes.data.data || [])
@@ -119,7 +119,7 @@ const addToCart = (product) => {
         items: cart.map(i => ({ productId: i.productId, quantity: i.qty }))
       }
 
-      const res = await axios.post(`${API_BASE_URL}/api/quotes`, payload, {
+      const res = await axios.post(`${API_BASE_URL}/quotes`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       })
 
