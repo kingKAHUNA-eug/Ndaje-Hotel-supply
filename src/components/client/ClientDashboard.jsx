@@ -77,15 +77,26 @@ function ClientDashboard() {
     ...Array.from(new Set(products.map(p => p.category))).map(cat => ({ id: cat, name: cat.charAt(0).toUpperCase() + cat.slice(1) }))
   ]
 
-  const addToCart = (product) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.productId === product._id)
-      if (existing) {
-        return prev.map(i => i.productId === product._id ? { ...i, qty: i.qty + 1 } : i)
-      }
-      return [...prev, { productId: product._id, name: product.name, price: product.referencePrice, qty: 1, unit: product.unit }]
-    })
-  }
+const addToCart = (product) => {
+  setCart(prev => {
+    const existing = prev.find(i => i.productId === product.id)
+    if (existing) {
+      return prev.map(i => 
+        i.productId === product.id 
+          ? { ...i, qty: i.qty + 1 } 
+          : i
+      )
+    }
+    return [...prev, {
+      productId: product.id,
+      name: product.name,
+      price: product.price,           // ← Use real price
+      qty: 1,
+      image: product.image || null,
+      icon: product.icon
+    }]
+  })
+}
 
   const updateCartQty = (productId, qty) => {
     if (qty <= 0) {
@@ -199,25 +210,51 @@ function ClientDashboard() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+          <div className="mb-6 text-gray-600">
+          Showing {filteredProducts.length} of {products.length} products
+          </div>
           {filteredProducts.map(product => (
-            <div key={product._id} className="bg-white rounded-2xl shadow hover:shadow-xl transition p-6">
-              <div className="bg-gray-100 border-2 border-dashed rounded-xl w-full h-48 mb-4" />
-              <h3 className="font-bold text-lg text-blue-900">{product.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{product.category}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold">RWF {product.referencePrice.toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">{product.unit}</p>
-                </div>
-                <button
-                  onClick={() => addToCart(product)}
-                  className="px-6 py-3 bg-blue-900 text-white rounded-xl hover:bg-blue-800 font-medium"
-                >
-                  Add to Quote
-                </button>
-              </div>
-            </div>
-          ))}
+  <div key={product.id} className="bg-white rounded-2xl shadow hover:shadow-xl transition p-6">
+    {/* REAL IMAGE */}
+    {product.image ? (
+      <img 
+        src={product.image} 
+        alt={product.name}
+        className="w-full h-48 object-cover rounded-xl mb-4"
+        onError={(e) => e.target.src = 'https://via.placeholder.com/300x200?text=No+Image'}
+      />
+    ) : (
+      <div className="bg-gray-100 border-2 border-dashed rounded-xl w-full h-48 mb-4 flex items-center justify-center text-6xl">
+        {product.icon}
+      </div>
+    )}
+
+    <h3 className="font-bold text-lg text-blue-900">{product.name}</h3>
+    {product.reference && (
+      <p className="text-sm text-gray-500">Ref: {product.reference}</p>
+    )}
+    <p className="text-sm text-gray-600 mt-1">{product.category}</p>
+
+    <div className="mt-4 flex items-center justify-between">
+      <div>
+        <p className="text-2xl font-bold text-blue-900">
+          RWF {Number(product.price).toLocaleString()}
+        </p>
+        {product.sku && (
+          <p className="text-xs text-gray-500">SKU: {product.sku}</p>
+        )}
+      </div>
+
+      <button
+        onClick={() => addToCart(product)}
+        className="px-6 py-3 bg-blue-900 text-white rounded-xl hover:bg-blue-800 font-medium flex items-center gap-2"
+      >
+        <PlusIcon className="w-5 h-5" />
+        Add to Quote
+      </button>
+    </div>
+  </div>
+))}
         </div>
 
         {/* Quotes History */}
