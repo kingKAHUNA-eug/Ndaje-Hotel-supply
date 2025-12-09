@@ -158,72 +158,81 @@ function ClientDashboard() {
   const cartTotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0)
 
   const submitQuote = async () => {
-    // Validation with toast messages
-    if (cart.length === 0) {
-      showToast('Your cart is empty. Add items before submitting.', 'warning')
-      return
-    }
-    
-    if (!quoteName.trim()) {
-      showToast('Please name your quote before submitting.', 'warning')
-      return
-    }
-
-    setSubmittingQuote(true)
-    
-    try {
-      const headers = { Authorization: `Bearer ${token}` }
-
-      // STEP 1: Create empty quote
-      console.log('Step 1: Creating empty quote...')
-      const createQuoteRes = await axios.post(
-        `${API_BASE_URL}/quotes`,
-        { notes: quoteName },
-        { headers }
-      )
-
-      const newQuote = createQuoteRes.data.data.quote
-      const quoteId = newQuote.id
-      console.log('✓ Quote created with ID:', quoteId)
-
-      // STEP 2: Add items
-      console.log('Step 2: Adding items to quote...')
-      const items = cart.map(item => ({
-        productId: item.productId,
-        quantity: item.qty
-      }))
-
-      const addItemsRes = await axios.post(
-        `${API_BASE_URL}/quotes/${quoteId}/add-items`,
-        { items },
-        { headers }
-      )
-
-      const finalQuote = addItemsRes.data.data.quote
-      console.log('✓ Quote completed:', finalQuote)
-
-      // Update UI
-      setQuotes(prev => [finalQuote, ...prev])
-      setCart([])
-      setQuoteName('')
-      setShowCart(false)
-      
-      showToast('Quote submitted successfully! A manager will review and price your items.', 'success')
-
-    } catch (err) {
-      console.error('❌ Quote submission error:', err)
-      console.error('Error details:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status
-      })
-      
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to submit quote'
-      showToast(`Error: ${errorMessage}`, 'error')
-    } finally {
-      setSubmittingQuote(false)
-    }
+  // Validation with toast messages
+  if (cart.length === 0) {
+    showToast('Your cart is empty. Add items before submitting.', 'warning')
+    return
   }
+  
+  if (!quoteName.trim()) {
+    showToast('Please name your quote before submitting.', 'warning')
+    return
+  }
+
+  setSubmittingQuote(true)
+  
+  try {
+    const headers = { Authorization: `Bearer ${token}` }
+
+    // STEP 1: Create empty quote
+    console.log('Step 1: Creating empty quote...')
+    const createQuoteRes = await axios.post(
+      `${API_BASE_URL}/quotes`,
+      { notes: quoteName },
+      { headers }
+    )
+
+    const newQuote = createQuoteRes.data.data.quote
+    const quoteId = newQuote.id
+    console.log('✓ Quote created with ID:', quoteId)
+
+    // STEP 2: Add items
+    console.log('Step 2: Adding items to quote...')
+    const items = cart.map(item => ({
+      productId: item.productId,
+      quantity: item.qty
+    }))
+
+    await axios.post(
+      `${API_BASE_URL}/quotes/${quoteId}/add-items`,
+      { items },
+      { headers }
+    )
+    console.log('✓ Items added to quote')
+
+    // STEP 3: FINALIZE THE QUOTE (MISSING STEP!)
+    console.log('Step 3: Finalizing quote...')
+    const finalizeRes = await axios.put(
+      `${API_BASE_URL}/quotes/${quoteId}/finalize`,
+      {},
+      { headers }
+    )
+
+    const finalizedQuote = finalizeRes.data.data.quote
+    console.log('✓ Quote finalized and sent to manager:', finalizedQuote)
+
+    // Update UI
+    setQuotes(prev => [finalizedQuote, ...prev])
+    setCart([])
+    setQuoteName('')
+    setShowCart(false)
+    
+    showToast('Quote submitted successfully! A manager will review and price your items.', 'success')
+
+  } catch (err) {
+    console.error('❌ Quote submission error:', err)
+    console.error('Error details:', {
+      message: err.message,
+      response: err.response?.data,
+      status: err.response?.status
+    })
+    
+    const errorMessage = err.response?.data?.message || err.message || 'Failed to submit quote'
+    showToast(`Error: ${errorMessage}`, 'error')
+  } finally {
+    setSubmittingQuote(false)
+  }
+}
 
   if (loading) {
     return (
@@ -469,14 +478,14 @@ function ClientDashboard() {
                       className="w-full py-4 bg-blue-900 text-white rounded-xl font-bold text-lg hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       {submittingQuote ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Submitting...
-                        </span>
-                      ) : 'Submit Quote Request'}
+  <span className="flex items-center justify-center gap-2">
+    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
+    Submitting...
+  </span>
+) : 'Submit Quote to Manager'}
                     </button>
                     
                     <p className="text-sm text-gray-500 text-center">
