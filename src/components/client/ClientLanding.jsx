@@ -60,6 +60,8 @@ const rwandaLocations = [
   { value: 'gisozi', label: 'Gisozi, Kigali', coordinates: [-1.9361, 30.0944] },
 ];
 
+
+
 function LocationMap({ onLocationSelect, selectedLocation }) {
   const [position, setPosition] = useState(selectedLocation || [-1.9706, 30.1044]); // Kigali center
 
@@ -166,6 +168,7 @@ function ClientLanding() {
   const { currentUser } = useAuth();  
   const [query, setQuery] = useState('')
   const [showLogin, setShowLogin] = useState(false)
+   const [loading, setLoading] = useState(false)
   const [showSignup, setShowSignup] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
