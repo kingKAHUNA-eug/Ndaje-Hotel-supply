@@ -60,8 +60,6 @@ const rwandaLocations = [
   { value: 'gisozi', label: 'Gisozi, Kigali', coordinates: [-1.9361, 30.0944] },
 ];
 
-
-
 function LocationMap({ onLocationSelect, selectedLocation }) {
   const [position, setPosition] = useState(selectedLocation || [-1.9706, 30.1044]); // Kigali center
 
@@ -168,7 +166,6 @@ function ClientLanding() {
   const { currentUser } = useAuth();  
   const [query, setQuery] = useState('')
   const [showLogin, setShowLogin] = useState(false)
-   const [loading, setLoading] = useState(false)
   const [showSignup, setShowSignup] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -617,13 +614,12 @@ function ClientLanding() {
                 </button>
               </div>
 
-             <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 bg-blue-900 hover:bg-blue-800 text-white font-bold text-lg rounded-xl transition disabled:opacity-60 shadow-lg"
-            >
-              {loading ? 'signing in...' : 'Get in touch with NDAJE'}
-            </button>
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 text-white rounded-xl px-4 py-4 font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+              >
+                {showLogin ? 'Sign In →' : 'Create Account →'}
+              </button>
             </form>
 
             {/* Google Sign In — only on signup */}
