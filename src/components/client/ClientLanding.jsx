@@ -614,12 +614,13 @@ function ClientLanding() {
                 </button>
               </div>
 
-              <button 
-                type="submit" 
-                className="w-full bg-blue-600 text-white rounded-xl px-4 py-4 font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
-              >
-                {showLogin ? 'Sign In →' : 'Create Account →'}
-              </button>
+             <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-blue-900 hover:bg-blue-800 text-white font-bold text-lg rounded-xl transition disabled:opacity-60 shadow-lg"
+            >
+              {loading ? 'signing in...' : 'Get in touch with NDAJE'}
+            </button>
             </form>
 
             {/* Google Sign In — only on signup */}
